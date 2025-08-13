@@ -1,0 +1,380 @@
+<!--
+Amazon-style Open-source Template
+Single-file HTML/CSS/JS. Mobile-first, responsive. No external libs.
+License: MIT — free to use in hackathons.
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mini-Amazon — Hackathon Template</title>
+  <style>
+    :root{
+      --header:#131921; /* amazon dark */
+      --nav:#232f3e;
+      --accent:#febd69; /* amazon yellow */
+      --text:#0f1111;
+      --muted:#58606a;
+      --bg:#f3f3f3;
+      --card:#ffffff;
+      --radius:14px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);color:var(--text)}
+
+    /* Header */
+    .header{position:sticky;top:0;z-index:50;background:var(--header);color:#fff}
+    .header-row{display:flex;gap:12px;align-items:center;padding:10px 12px;max-width:1200px;margin:0 auto}
+    .logo{display:flex;align-items:center;gap:6px;font-weight:800;letter-spacing:.3px}
+    .logo i{display:inline-block;width:26px;height:26px;border-radius:6px;background:var(--accent)}
+    .search{flex:1;display:flex;gap:0}
+    .search input{flex:1;padding:10px 12px;border:none;border-radius:8px 0 0 8px;outline:none}
+    .search button{border:none;background:var(--accent);padding:10px 14px;border-radius:0 8px 8px 0;font-weight:700;cursor:pointer}
+    .cart-btn{margin-left:auto;background:#232f3e;padding:8px 12px;border-radius:10px;cursor:pointer}
+    .badge{background:#e53935;color:#fff;border-radius:999px;padding:2px 7px;margin-left:6px;font-size:12px}
+
+    /* Subnav */
+    .subnav{background:var(--nav);color:#fff}
+    .subnav-row{max-width:1200px;margin:0 auto;display:flex;gap:12px;align-items:center;padding:8px 12px;overflow:auto}
+    .chip{white-space:nowrap;background:rgba(255,255,255,.06);padding:8px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.08);cursor:pointer}
+    .chip.active{background:#fff;color:#000}
+
+    /* Layout */
+    .container{max-width:1200px;margin:12px auto;padding:0 12px;display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:980px){.container{grid-template-columns:260px 1fr}}
+
+    /* Sidebar filters */
+    .card{background:var(--card);border-radius:var(--radius);box-shadow:0 1px 3px rgba(0,0,0,.06)}
+    .filter{padding:14px}
+    .filter h3{margin:0 0 8px 0}
+    .row{display:flex;gap:8px;align-items:center}
+    .row input[type="number"]{width:48%;padding:8px;border-radius:8px;border:1px solid #e6e6e6}
+    .sec{margin-top:12px}
+    .stars{color:#f59e0b}
+
+    /* Main area */
+    .toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px}
+    .select{padding:8px 10px;border-radius:8px;border:1px solid #e5e7eb;background:#fff}
+
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:12px}
+    @media(min-width:700px){.grid{grid-template-columns:repeat(3,1fr)}}
+    @media(min-width:1100px){.grid{grid-template-columns:repeat(4,1fr)}}
+
+    .product{background:#fff;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;border:1px solid #eee}
+    .thumb{height:160px;background:linear-gradient(135deg,#e9eef7,#cfd8e3);display:flex;align-items:center;justify-content:center;font-weight:700}
+    .pbody{padding:10px;display:flex;flex-direction:column;gap:6px}
+    .title{font-weight:600;line-height:1.3}
+    .price{font-weight:800}
+    .muted{color:var(--muted)}
+    .btn{border:none;background:var(--accent);padding:10px;border-radius:10px;font-weight:700;cursor:pointer}
+    .btn.secondary{background:#111827;color:#fff}
+
+    /* Footer */
+    .footer{margin:24px 0 60px;color:#6b7280;text-align:center}
+
+    /* Cart drawer */
+    .drawer{position:fixed;top:0;right:-360px;bottom:0;width:360px;background:#fff;box-shadow:-8px 0 24px rgba(0,0,0,.16);transition:right .25s ease;z-index:60;display:flex;flex-direction:column}
+    .drawer.open{right:0}
+    .drawer header{padding:12px;border-bottom:1px solid #eee;display:flex;align-items:center;justify-content:space-between}
+    .drawer .items{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+    .cart-row{display:flex;gap:10px}
+    .cart-row img{width:56px;height:56px;border-radius:8px;background:#eee}
+    .qty{display:flex;gap:6px;align-items:center}
+    .qty button{width:28px;height:28px;border-radius:6px;border:1px solid #e5e7eb;background:#fff;cursor:pointer}
+    .drawer footer{border-top:1px solid #eee;padding:12px;display:flex;flex-direction:column;gap:8px}
+
+    /* Modal for quick view */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:70}
+    .modal.open{display:flex}
+    .modal-card{background:#fff;border-radius:16px;max-width:760px;width:100%;overflow:hidden}
+    .modal-body{display:grid;grid-template-columns:1fr;gap:0}
+    .modal-img{min-height:220px;background:linear-gradient(135deg,#e9eef7,#cfd8e3)}
+    .modal-content{padding:16px}
+    @media(min-width:820px){
+      .modal-body{grid-template-columns:1fr 1.1fr}
+      .modal-img{min-height:100%}
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-row">
+      <div class="logo"><i></i> mini-amazon</div>
+      <div class="search">
+        <input id="search" placeholder="Search for products, brands and more" />
+        <button onclick="applyFilters()">Search</button>
+      </div>
+      <div class="cart-btn" onclick="toggleCart()">🛒 Cart <span class="badge" id="cartCount">0</span></div>
+    </div>
+    <nav class="subnav">
+      <div class="subnav-row" id="cats">
+        <!-- chips injected by JS -->
+      </div>
+    </nav>
+  </header>
+
+  <!-- Body -->
+  <div class="container">
+    <!-- Sidebar filters -->
+    <aside class="card filter">
+      <h3>Filters</h3>
+      <div class="sec">
+        <div class="muted" style="font-size:14px">Price</div>
+        <div class="row" style="margin-top:6px">
+          <input type="number" id="minPrice" placeholder="Min" min="0" />
+          <input type="number" id="maxPrice" placeholder="Max" min="0" />
+        </div>
+      </div>
+      <div class="sec">
+        <div class="muted" style="font-size:14px">Rating</div>
+        <div class="row" style="margin-top:6px">
+          <label><input type="radio" name="rating" value="4"> ⭐⭐⭐⭐ & up</label>
+        </div>
+        <div class="row">
+          <label><input type="radio" name="rating" value="3"> ⭐⭐⭐ & up</label>
+        </div>
+        <div class="row">
+          <label><input type="radio" name="rating" value="0" checked> Any</label>
+        </div>
+      </div>
+      <div class="sec">
+        <button class="btn secondary" onclick="clearFilters()">Clear</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="card">
+      <div class="toolbar">
+        <div class="muted">Showing <span id="count">0</span> items</div>
+        <select class="select" id="sort" onchange="applyFilters()">
+          <option value="pop">Sort: Popularity</option>
+          <option value="l2h">Price: Low to High</option>
+          <option value="h2l">Price: High to Low</option>
+          <option value="new">Newest</option>
+        </select>
+      </div>
+      <div class="grid" id="grid"><!-- products here --></div>
+      <div class="footer">Made for hackathons • MIT License</div>
+    </main>
+  </div>
+
+  <!-- Cart Drawer -->
+  <aside class="drawer" id="drawer">
+    <header>
+      <strong>Your Cart</strong>
+      <button onclick="toggleCart()" class="select">Close</button>
+    </header>
+    <div class="items" id="cartItems"></div>
+    <footer>
+      <div class="row" style="justify-content:space-between">
+        <div class="muted">Subtotal</div>
+        <strong id="subtotal">₹0</strong>
+      </div>
+      <button class="btn" onclick="checkout()">Proceed to Buy</button>
+    </footer>
+  </aside>
+
+  <!-- Quick View Modal -->
+  <div class="modal" id="modal">
+    <div class="modal-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #eee">
+        <strong id="mTitle">Product</strong>
+        <button class="select" onclick="closeModal()">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-img" id="mImg"></div>
+        <div class="modal-content">
+          <div class="muted" id="mCat"></div>
+          <h2 style="margin:6px 0" id="mName"></h2>
+          <div class="row" style="justify-content:space-between">
+            <div>
+              <div class="price" id="mPrice">₹0</div>
+              <div class="stars" id="mStars">★★★★★</div>
+            </div>
+            <button class="btn" id="mAdd">Add to Cart</button>
+          </div>
+          <p class="muted" style="margin-top:10px" id="mDesc"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Mock Data (edit freely) ---
+    const products = [
+      {id:1, title:'Echo Mini Smart Speaker', price:1999, rating:4.4, category:'Electronics', img:'🔊', desc:'Compact smart speaker with rich sound.'},
+      {id:2, title:'Noise Canceling Headphones', price:4999, rating:4.6, category:'Electronics', img:'🎧', desc:'Over‑ear, 30h battery, fast charge.'},
+      {id:3, title:'Stainless Steel Bottle 1L', price:599, rating:4.2, category:'Home & Kitchen', img:'🥤', desc:'Keeps drinks cold for 24h, hot for 12h.'},
+      {id:4, title:'Ergonomic Office Chair', price:7999, rating:4.1, category:'Furniture', img:'💺', desc:'Adjustable lumbar, breathable mesh.'},
+      {id:5, title:'Gaming Mouse RGB', price:1299, rating:4.5, category:'Computers', img:'🖱️', desc:'7200 DPI, 7 buttons, low‑latency.'},
+      {id:6, title:'Fast Charging Power Bank 20k', price:1699, rating:4.3, category:'Mobiles', img:'🔋', desc:'PD 20W, dual USB, slim design.'},
+      {id:7, title:'Non-stick Frying Pan 28cm', price:899, rating:4.0, category:'Home & Kitchen', img:'🍳', desc:'PFOA-free, induction compatible.'},
+      {id:8, title:'Cotton Bedsheet Queen', price:1099, rating:3.9, category:'Home & Kitchen', img:'🛏️', desc:'300 TC, soft feel, 2 pillow covers.'},
+      {id:9, title:'Wireless Keyboard', price:1599, rating:4.1, category:'Computers', img:'⌨️', desc:'Low profile keys, 2.4G receiver.'},
+      {id:10, title:'Android TV Stick 4K', price:3499, rating:4.4, category:'Electronics', img:'📺', desc:'Dolby Vision, Dual‑band Wi‑Fi.'},
+      {id:11, title:'Backpack 28L Water Resistant', price:1290, rating:4.2, category:'Bags & Luggage', img:'🎒', desc:'Laptop sleeve, 10 pockets, light.'},
+      {id:12, title:'Running Shoes Men', price:2199, rating:4.0, category:'Fashion', img:'👟', desc:'Cushioned sole, breathable knit.'},
+    ];
+
+    const categories = ['All','Electronics','Mobiles','Computers','Home & Kitchen','Furniture','Fashion','Bags & Luggage'];
+
+    // --- State ---
+    const state = { q:'', cat:'All', min:0, max:Infinity, rating:0, sort:'pop', cart:{} };
+
+    // --- Elements ---
+    const grid = document.getElementById('grid');
+    const count = document.getElementById('count');
+    const search = document.getElementById('search');
+    const minEl = document.getElementById('minPrice');
+    const maxEl = document.getElementById('maxPrice');
+
+    // Build category chips
+    const catsWrap = document.getElementById('cats');
+    categories.forEach(c=>{
+      const chip = document.createElement('div');
+      chip.className = 'chip' + (c===state.cat ? ' active':'');
+      chip.textContent = c;
+      chip.onclick = ()=>{document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));chip.classList.add('active');state.cat=c;applyFilters()};
+      catsWrap.appendChild(chip);
+    });
+
+    // Rating radio change
+    document.querySelectorAll('input[name="rating"]').forEach(r=>{
+      r.addEventListener('change',()=>{ state.rating = +document.querySelector('input[name="rating"]:checked').value; applyFilters(); });
+    });
+
+    // Search enter
+    search.addEventListener('keydown',e=>{ if(e.key==='Enter') applyFilters(); });
+
+    // Clear filters
+    function clearFilters(){
+      search.value=''; minEl.value=''; maxEl.value=''; state.q=''; state.min=0; state.max=Infinity; state.rating=0; state.cat='All'; state.sort='pop';
+      document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active')); document.querySelector('.chip').classList.add('active');
+      document.querySelector('input[name="rating"][value="0"]').checked=true;
+      document.getElementById('sort').value='pop';
+      applyFilters();
+    }
+
+    // Apply filters & sort
+    function applyFilters(){
+      state.q = search.value.trim().toLowerCase();
+      state.min = minEl.value? +minEl.value : 0;
+      state.max = maxEl.value? +maxEl.value : Infinity;
+      const sort = document.getElementById('sort').value; state.sort=sort;
+
+      let list = products.filter(p=>
+        (state.cat==='All' || p.category===state.cat) &&
+        (!state.q || p.title.toLowerCase().includes(state.q)) &&
+        (p.price>=state.min && p.price<=state.max) &&
+        (p.rating>=state.rating)
+      );
+
+      if(sort==='l2h') list.sort((a,b)=>a.price-b.price);
+      if(sort==='h2l') list.sort((a,b)=>b.price-a.price);
+      if(sort==='new') list.sort((a,b)=>b.id-a.id);
+      if(sort==='pop') list.sort((a,b)=>b.rating-a.rating);
+
+      render(list);
+    }
+
+    function render(list){
+      grid.innerHTML='';
+      count.textContent = list.length;
+      list.forEach(p=>{
+        const card = document.createElement('article');
+        card.className='product';
+        card.innerHTML = `
+          <div class="thumb">${p.img}</div>
+          <div class="pbody">
+            <div class="title">${p.title}</div>
+            <div class="row" style="justify-content:space-between">
+              <div>
+                <div class="price">₹${p.price.toLocaleString()}</div>
+                <div class="muted">${p.category}</div>
+              </div>
+              <div class="stars">${'★'.repeat(Math.round(p.rating))}<span class="muted"> (${p.rating.toFixed(1)})</span></div>
+            </div>
+            <div class="row" style="gap:8px;margin-top:6px">
+              <button class="btn" onclick='addToCart(${p.id})'>Add to Cart</button>
+              <button class="btn secondary" onclick='quickView(${p.id})'>Quick View</button>
+            </div>
+          </div>`;
+        grid.appendChild(card);
+      });
+    }
+
+    // Cart logic
+    function addToCart(id){
+      state.cart[id] = (state.cart[id]||0) + 1;
+      updateCartUI();
+    }
+    function removeFromCart(id){
+      delete state.cart[id];
+      updateCartUI();
+    }
+    function changeQty(id,delta){
+      state.cart[id] = Math.max(1,(state.cart[id]||1)+delta);
+      updateCartUI();
+    }
+    function toggleCart(){
+      const d = document.getElementById('drawer');
+      d.classList.toggle('open');
+      updateCartUI();
+    }
+    function updateCartUI(){
+      const cartCount = Object.values(state.cart).reduce((a,b)=>a+b,0);
+      document.getElementById('cartCount').textContent = cartCount;
+      const items = document.getElementById('cartItems');
+      items.innerHTML='';
+      let total=0;
+      for(const id in state.cart){
+        const p = products.find(x=>x.id==id);
+        const qty = state.cart[id];
+        total += p.price*qty;
+        const row = document.createElement('div');
+        row.className='cart-row';
+        row.innerHTML = `
+          <img alt="" />
+          <div style="flex:1">
+            <div style="font-weight:600">${p.title}</div>
+            <div class="muted">₹${p.price.toLocaleString()}</div>
+            <div class="qty" style="margin-top:6px">
+              <button onclick='changeQty(${p.id},-1)'>-</button>
+              <div>${qty}</div>
+              <button onclick='changeQty(${p.id},1)'>+</button>
+              <button class="select" style="margin-left:auto" onclick='removeFromCart(${p.id})'>Remove</button>
+            </div>
+          </div>`;
+        items.appendChild(row);
+      }
+      document.getElementById('subtotal').textContent = '₹'+ total.toLocaleString();
+    }
+
+    function checkout(){
+      alert('Checkout demo — implement payment later.');
+    }
+
+    // Quick view modal
+    function quickView(id){
+      const p = products.find(x=>x.id===id);
+      document.getElementById('mTitle').textContent = p.title;
+      document.getElementById('mName').textContent = p.title;
+      document.getElementById('mPrice').textContent = '₹'+p.price.toLocaleString();
+      document.getElementById('mStars').innerHTML = '★'.repeat(Math.round(p.rating)) + `<span class="muted"> (${p.rating.toFixed(1)})</span>`;
+      document.getElementById('mDesc').textContent = p.desc;
+      document.getElementById('mCat').textContent = p.category;
+      document.getElementById('mImg').textContent = p.img;
+      const addBtn = document.getElementById('mAdd');
+      addBtn.onclick = ()=>{ addToCart(id); closeModal(); toggleCart(); };
+      document.getElementById('modal').classList.add('open');
+    }
+    function closeModal(){ document.getElementById('modal').classList.remove('open'); }
+
+    // Initialize
+    applyFilters();
+  </script>
+</body>
+</html>
