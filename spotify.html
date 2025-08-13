@@ -1,0 +1,295 @@
+<!--
+Spotify-style Open-source Template
+Single-file HTML/CSS/JS. Mobile-first responsive.
+Usage: open this file in a browser. Edit assets/text as needed for the hackathon.
+License: MIT / Public domain (use freely).
+-->
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mini-Spotify — Hackathon Template</title>
+  <style>
+    :root{
+      --bg:#121212; /* dark */
+      --card:#1e1e1e;
+      --muted:#b3b3b3;
+      --accent:#1db954; /* spotify-green */
+      --glass: rgba(255,255,255,0.03);
+      --radius:12px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#0f0f0f 0%, #141414 100%);color:#fff}
+
+    /* Layout */
+    .app{min-height:100vh;display:flex;flex-direction:column}
+    .container{display:grid;grid-template-columns: 1fr;gap:16px;padding:16px;max-width:1100px;margin:0 auto;width:100%}
+
+    /* Topbar */
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:42px;height:42px;background:var(--accent);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#071;}
+    .search{flex:1;margin:0 16px}
+    .search input{width:100%;padding:10px 12px;border-radius:999px;background:var(--card);border:1px solid rgba(255,255,255,0.03);color:var(--muted)}
+    .icons{display:flex;gap:12px;align-items:center}
+    .icon-btn{background:var(--card);padding:8px;border-radius:8px}
+
+    /* Main content grid */
+    .main{display:grid;grid-template-columns: 1fr;gap:16px}
+
+    /* hero / now playing */
+    .hero{background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:16px;border-radius:var(--radius);display:flex;gap:16px;align-items:center}
+    .cover{width:120px;height:120px;border-radius:8px;background:linear-gradient(135deg,#2a2a2a,#0f0f0f);display:flex;align-items:center;justify-content:center;font-weight:700}
+    .meta{flex:1}
+    .meta h1{margin:0 0 6px 0;font-size:20px}
+    .meta p{margin:0;color:var(--muted)}
+    .player-controls{display:flex;gap:10px;margin-top:12px}
+    .play{background:var(--accent);padding:10px 16px;border-radius:999px;border:none;color:#000;font-weight:700}
+    .btn{background:var(--card);padding:8px;border-radius:8px}
+
+    /* playlist grid */
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .card{background:var(--card);padding:12px;border-radius:12px}
+    .card .title{font-weight:600}
+    .card .desc{color:var(--muted);font-size:13px}
+
+    /* sidebar for larger screens */
+    @media(min-width:880px){
+      .container{grid-template-columns:260px 1fr 300px;align-items:start}
+      .main{grid-column:2}
+      .sidebar{grid-column:1}
+      .rightpane{grid-column:3}
+      .grid{grid-template-columns:repeat(3,1fr)}
+    }
+
+    /* sidebar */
+    .sidebar{display:none}
+    @media(min-width:880px){.sidebar{display:block}}
+    .nav{background:transparent;padding:12px;border-radius:12px}
+    .nav a{display:block;padding:10px;border-radius:8px;color:var(--muted);text-decoration:none}
+    .nav a.active{color:#fff;background:var(--glass)}
+
+    /* right pane */
+    .rightpane{display:none}
+    @media(min-width:880px){.rightpane{display:block}}
+    .profile{background:var(--card);padding:12px;border-radius:12px}
+    .progress{height:8px;background:rgba(255,255,255,0.04);border-radius:999px;overflow:hidden;margin-top:8px}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#5efc8d);width:40%}
+
+    /* footer mini player on mobile */
+    .mini-player{position:fixed;left:12px;right:12px;bottom:12px;background:var(--card);border-radius:12px;padding:8px;display:flex;align-items:center;gap:12px}
+    .mini-player .track{flex:1}
+
+    /* small helpers */
+    .muted{color:var(--muted)}
+
+    /* nice hover */
+    a,button{cursor:pointer}
+    .card:hover{transform:translateY(-4px);transition:all .18s ease}
+
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="container">
+
+      <!-- Sidebar (large screens) -->
+      <aside class="sidebar">
+        <div class="brand" style="margin-bottom:12px">
+          <div class="logo">S</div>
+          <div>
+            <div style="font-weight:700">Mini-Spotify</div>
+            <div class="muted" style="font-size:12px">Hackathon Template</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <a class="active">Home</a>
+          <a>Search</a>
+          <a>Your Library</a>
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.03);margin:8px 0">
+          <a>Liked Songs</a>
+          <a>Top Charts</a>
+        </nav>
+      </aside>
+
+      <!-- Main area -->
+      <main class="main">
+
+        <!-- Top bar -->
+        <div class="topbar">
+          <div class="brand">
+            <div class="logo">S</div>
+            <div style="font-weight:700">Mini-Spotify</div>
+          </div>
+          <div class="search">
+            <input id="q" placeholder="Search artists, songs, or podcasts" />
+          </div>
+          <div class="icons">
+            <div class="icon-btn">🔔</div>
+            <div class="icon-btn">⚙️</div>
+            <div class="icon-btn">👤</div>
+          </div>
+        </div>
+
+        <!-- Hero / Now Playing -->
+        <section class="hero">
+          <div class="cover" id="cover">AL</div>
+          <div class="meta">
+            <h1 id="song-title">Alive — Artist Name</h1>
+            <p class="muted" id="song-desc">Album • 2025 • 3:12</p>
+            <div class="player-controls">
+              <button class="btn" onclick="prevTrack()">⏮</button>
+              <button class="play" id="playBtn" onclick="togglePlay()">Play</button>
+              <button class="btn" onclick="nextTrack()">⏭</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Playlist grid -->
+        <section style="margin-top:8px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+            <h3 style="margin:0">Featured Playlists</h3>
+            <div class="muted" style="font-size:13px">Updated just now</div>
+          </div>
+
+          <div class="grid">
+            <article class="card">
+              <div style="height:120px;background:linear-gradient(135deg,#3b3b3b,#111);border-radius:8px;display:flex;align-items:end;padding:8px"> 
+                <div style="font-weight:700">Chill Vibes</div>
+              </div>
+              <div style="padding-top:8px">
+                <div class="title">Chill Vibes</div>
+                <div class="desc">Relaxing tracks • 30 songs</div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div style="height:120px;background:linear-gradient(135deg,#2b3b4b,#101);border-radius:8px;display:flex;align-items:end;padding:8px"> 
+                <div style="font-weight:700">Top Hits</div>
+              </div>
+              <div style="padding-top:8px">
+                <div class="title">Top Hits</div>
+                <div class="desc">Trending now • 50 songs</div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div style="height:120px;background:linear-gradient(135deg,#4b2b5b,#120);border-radius:8px;display:flex;align-items:end;padding:8px"> 
+                <div style="font-weight:700">Focus</div>
+              </div>
+              <div style="padding-top:8px">
+                <div class="title">Focus</div>
+                <div class="desc">Deep concentration • 40 songs</div>
+              </div>
+            </article>
+
+            <article class="card">
+              <div style="height:120px;background:linear-gradient(135deg,#1b4b2b,#0e120);border-radius:8px;display:flex;align-items:end;padding:8px"> 
+                <div style="font-weight:700">Throwback</div>
+              </div>
+              <div style="padding-top:8px">
+                <div class="title">Throwback</div>
+                <div class="desc">Classics • 60 songs</div>
+              </div>
+            </article>
+
+            <!-- Add more cards as needed -->
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Right pane (large screens) -->
+      <aside class="rightpane">
+        <div class="profile">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:56px;height:56px;border-radius:10px;background:linear-gradient(135deg,#666,#222);display:flex;align-items:center;justify-content:center">U</div>
+            <div>
+              <div style="font-weight:700">User Name</div>
+              <div class="muted" style="font-size:12px">Premium</div>
+            </div>
+          </div>
+          <div style="margin-top:12px"> 
+            <div class="muted" style="font-size:13px">Recently Played</div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:40px;height:40px;border-radius:6px;background:#222"></div>
+                <div style="font-size:13px">Track 1</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="width:40px;height:40px;border-radius:6px;background:#222"></div>
+                <div style="font-size:13px">Track 2</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px">
+            <div class="muted" style="font-size:13px">Listening</div>
+            <div class="progress"><i></i></div>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- Mini player (mobile only) -->
+    <div class="mini-player" id="mini">
+      <div style="width:56px;height:56px;border-radius:8px;background:#222;display:flex;align-items:center;justify-content:center">AL</div>
+      <div class="track">
+        <div style="font-weight:700" id="mini-title">Alive — Artist Name</div>
+        <div class="muted" style="font-size:12px">3:12 • Album</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn" onclick="togglePlay()" id="mini-play">▶️</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Simple interactive behaviors for hackathon demo
+    let playing = false;
+    const playBtn = document.getElementById('playBtn');
+    const miniBtn = document.getElementById('mini-play');
+    const mini = document.getElementById('mini');
+
+    function togglePlay(){
+      playing = !playing;
+      playBtn.textContent = playing ? 'Pause' : 'Play';
+      if(miniBtn) miniBtn.textContent = playing ? '⏸' : '▶️';
+      // animation: pulse cover when playing
+      const cover = document.getElementById('cover');
+      if(playing){cover.style.transform='scale(1.04)';cover.style.transition='transform .3s ease'}
+      else {cover.style.transform='scale(1)'}
+    }
+
+    function prevTrack(){
+      alert('Previous track (demo)')
+    }
+    function nextTrack(){
+      alert('Next track (demo)')
+    }
+
+    // Mobile: hide mini player on large screens
+    function handleResize(){
+      if(window.innerWidth>=880) mini.style.display='none';
+      else mini.style.display='flex';
+    }
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    // Quick demo: clickable cards change hero
+    document.querySelectorAll('.card').forEach((c,i)=>{
+      c.addEventListener('click',()=>{
+        document.getElementById('song-title').textContent = c.querySelector('.title').textContent + ' — Various Artists';
+        document.getElementById('song-desc').textContent = c.querySelector('.desc').textContent;
+        togglePlay();
+      })
+    })
+
+  </script>
+</body>
+</html>
